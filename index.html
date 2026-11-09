@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDGs 性別平權 - 第一關</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; width: 100vw; height: 100vh; overflow: hidden; position: relative; background: #87ceeb; }
+    .header-bar { position: absolute; top: 0; left: 0; width: 100%; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; z-index: 20; pointer-events: none; }
+    .game-title { font-size: 26px; font-weight: 900; color: #2c3e50; background: rgba(255, 255, 255, 0.9); padding: 8px 22px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .score-board { font-size: 22px; font-weight: bold; color: #d35400; background: rgba(255, 255, 255, 0.9); padding: 8px 22px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .village-scene { width: 100%; height: 100%; position: relative; background: linear-gradient(to bottom, #87ceeb 0%, #e0f7fa 50%, #81c784 50%, #388e3c 100%); overflow: hidden; }
+    .huts-bg { position: absolute; bottom: 10%; width: 100%; height: 200px; display: flex; justify-content: space-around; align-items: flex-end; pointer-events: none; opacity: 0.7; }
+    .hut-icon { width: 80px; height: 70px; background: #a1887f; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); position: relative; }
+    .balloon-item { position: absolute; cursor: pointer; z-index: 10; transition: transform 0.3s ease, opacity 0.5s ease; animation: float 4s ease-in-out infinite alternate; }
+    .balloon-item:hover { transform: scale(1.2) !important; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3)); }
+    .balloon-svg { width: 70px; height: 90px; display: block; }
+    @keyframes float { 0% { transform: translateY(0px); } 100% { transform: translateY(-12px); } }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 100; }
+    .hidden { display: none !important; }
+    .modal-card { background: #ffffff; border-radius: 24px; padding: 30px; max-width: 600px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .instruction-card h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; font-size: 28px; }
+    .instruction-list { list-style: none; margin-bottom: 25px; }
+    .instruction-list li { font-size: 16px; color: #34495e; margin-bottom: 12px; line-height: 1.5; }
+    .btn-center-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; }
+    .primary-btn { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; border: none; padding: 14px 45px; font-size: 20px; font-weight: bold; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4); transition: all 0.2s ease; }
+    .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(46, 204, 113, 0.6); }
+    .quiz-question { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 20px; line-height: 1.4; }
+    .options-grid { display: flex; flex-direction: column; gap: 12px; }
+    .option-btn { background: #f8f9fa; border: 2px solid #e9ecef; padding: 12px 20px; border-radius: 12px; font-size: 16px; text-align: left; cursor: pointer; transition: all 0.2s; }
+    .option-btn:hover { background: #e3f2fd; border-color: #90caf9; }
+    .result-card { text-align: center; }
+    .result-title { font-size: 32px; font-weight: 900; color: #e67e22; margin-bottom: 15px; }
+    .result-desc { font-size: 18px; color: #7f8c8d; margin-bottom: 25px; }
+  </style>
+</head>
+<body>
+  <div class="header-bar">
+    <div class="game-title">SDGs 性別平權</div>
+    <div class="score-board">答對題數：<span id="correct-count">0</span> / 10</div>
+  </div>
+
+  <div class="village-scene" id="game-scene">
+    <div class="huts-bg">
+      <div class="hut-icon"></div>
+      <div class="hut-icon"></div>
+      <div class="hut-icon"></div>
+      <div class="hut-icon"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="instruction-modal">
+    <div class="modal-card instruction-card">
+      <h2>🎈 第一關：村莊熱氣球挑戰</h2>
+      <ul class="instruction-list">
+        <li>☆ 請點選畫面中的熱汽球，每個熱汽球搭配 1 題單選題。</li>
+        <li>☆ 答題後，不論對、錯，答過題的熱汽球都會消失。</li>
+        <li>☆ 答對的題數如果小於 8 題，就出現重新挑戰的訊息與按鈕，請重新挑戰。</li>
+        <li>☆ 答對 8 題(含)以上，可以進入下一個關卡。</li>
+        <li>☆ 全部的關卡完成，可以製作個人的過關證書喔！</li>
+      </ul>
+      <div class="btn-center-wrapper">
+        <button class="primary-btn" onclick="startGame()">開始遊戲</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="quiz-modal">
+    <div class="modal-card">
+      <div class="quiz-question" id="quiz-title">題目載入中...</div>
+      <div class="options-grid" id="options-container"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="result-modal">
+    <div class="modal-card result-card">
+      <div class="result-title" id="result-title">結算中...</div>
+      <div class="result-desc" id="result-desc"></div>
+      <div class="btn-center-wrapper" id="result-btn-container"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { q: "SDGs Goal 5 的核心目標是什麼？", options: ["消除貧窮", "實現性別平等，賦權所有婦女和女童", "氣候行動", "優質教育"], ans: 1 },
+      { q: "關於家務分擔，下列何者符合性別平權觀念？", options: ["家務事應由全家人依能力共同分擔", "家務事是女性的專屬責任", "男性只需要負責賺錢", "女性結婚後應辭職包辦家務"], ans: 0 },
+      { q: "職場上遇到同工不同酬的情況，違反了什麼原則？", options: ["環境永續原則", "性別平等與尊嚴勞動原則", "自由市場原則", "個人績效原則"], ans: 1 },
+      { q: "評選企業領導者時，最合適的考量標準為何？", options: ["性別與生理特徵", "個人專業能力與領導素養", "是否已婚育", "傳統刻板印象"], ans: 1 },
+      { q: "當看到打破性別刻板印象的人（如男性護理師、女性工程師）時，我們應該？", options: ["給予尊重與支持", "批評與質疑", "排斥他們", "要求他們換工作"], ans: 0 },
+      { q: "「玻璃天花板」(Glass Ceiling) 在性別議題中指的是什麼？", options: ["建築物的透明屋頂", "阻礙女性或少數族群升遷至高階職位的無形障礙", "一種防彈玻璃材料", "辦公室採光設計"], ans: 1 },
+      { q: "關於育嬰留職停薪（育嬰假），下列敘述何者正確？", options: ["只有女性可以申請", "符合條件的女性與男性皆可依法申請", "申請會被扣除所有年資", "只有主管級才能申請"], ans: 1 },
+      { q: "玩具顏色或種類是否有特定性別劃分？", options: ["有，男生只能玩汽車、藍色", "有，女生只能玩洋娃娃、粉紅色", "沒有，任何性別都能自由選擇喜愛的玩具與顏色", "以上皆是"], ans: 2 },
+      { q: "如何營造友善且具包容性的校園與職場環境？", options: ["尊重多元性別與不同個體差異", "嘲笑性別氣質不符傳統預期的人", "無視性別歧視言論", "只與同性別者合作"], ans: 0 },
+      { q: "當遭遇性騷擾時，下列何者為正確做法？", options: ["忍氣吞聲不反應", "明確表達拒絕並尋求正當管道申訴與求助", "自我懷疑與責怪", "私下散播謠言"], ans: 1 }
+    ];
+
+    let correctAnswers = 0;
+    let totalAnswered = 0;
+    let currentBalloon = null;
+
+    function startGame() {
+      document.getElementById('instruction-modal').classList.add('hidden');
+      generateBalloons();
+    }
+
+    function generateBalloons() {
+      const scene = document.getElementById('game-scene');
+      const balloonColors = ['#ff7675', '#74b9ff', '#55efc4', '#ffeaa7', '#a29bfe', '#fd79a8', '#e17055', '#00b894', '#0984e3', '#6c5ce7'];
+
+      questions.forEach((qObj, idx) => {
+        const balloon = document.createElement('div');
+        balloon.className = 'balloon-item';
+        
+        const topPos = Math.floor(Math.random() * 34) + 8;
+        const leftPos = Math.floor(Math.random() * 75) + 5;
+        const scaleVal = (Math.random() * 0.5 + 1.0).toFixed(2);
+
+        balloon.style.top = topPos + '%';
+        balloon.style.left = leftPos + '%';
+        balloon.style.transform = `scale(${scaleVal})`;
+
+        const color = balloonColors[idx % balloonColors.length];
+
+        balloon.innerHTML = `
+          <svg class="balloon-svg" viewBox="0 0 100 130">
+            <ellipse cx="50" cy="45" rx="40" ry="45" fill="${color}" />
+            <polygon points="40,90 60,90 55,98 45,98" fill="#d35400" />
+            <rect x="42" y="100" width="16" height="14" rx="2" fill="#7f8c8d" />
+            <line x1="42" y1="90" x2="44" y2="100" stroke="#333" stroke-width="1.5" />
+            <line x1="58" y1="90" x2="56" y2="100" stroke="#333" stroke-width="1.5" />
+          </svg>
+        `;
+
+        balloon.onclick = () => openQuiz(qObj, balloon);
+        scene.appendChild(balloon);
+      });
+    }
+
+    function openQuiz(qObj, balloonElem) {
+      currentBalloon = balloonElem;
+      document.getElementById('quiz-title').innerText = `題目：${qObj.q}`;
+      const optionsBox = document.getElementById('options-container');
+      optionsBox.innerHTML = '';
+
+      qObj.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = `${String.fromCharCode(65 + optIdx)}. ${optText}`;
+        btn.onclick = () => handleAnswer(optIdx === qObj.ans);
+        optionsBox.appendChild(btn);
+      });
+
+      document.getElementById('quiz-modal').classList.remove('hidden');
+    }
+
+    function handleAnswer(isCorrect) {
+      document.getElementById('quiz-modal').classList.add('hidden');
+      
+      if (currentBalloon) {
+        currentBalloon.style.opacity = '0';
+        setTimeout(() => currentBalloon.remove(), 400);
+      }
+
+      totalAnswered++;
+      if (isCorrect) {
+        correctAnswers++;
+        document.getElementById('correct-count').innerText = correctAnswers;
+      }
+
+      if (correctAnswers >= 8) {
+        showResult(true);
+      } else if (totalAnswered >= 10) {
+        showResult(false);
+      }
+    }
+
+    function showResult(isPassed) {
+      const modal = document.getElementById('result-modal');
+      const title = document.getElementById('result-title');
+      const desc = document.getElementById('result-desc');
+      const btnBox = document.getElementById('result-btn-container');
+
+      modal.classList.remove('hidden');
+      btnBox.innerHTML = '';
+
+      if (isPassed) {
+        title.innerText = '🎉 恭喜通關！';
+        desc.innerText = `您已成功答對 ${correctAnswers} 題，達到進入下一關的標準！`;
+        btnBox.innerHTML = `<button class="primary-btn" onclick="location.href='level2.html'">前往下一關</button>`;
+      } else {
+        title.innerText = '💪 挑戰失敗';
+        desc.innerText = `您答對了 ${correctAnswers} 題，未達 8 題標準。再接再厲！`;
+        btnBox.innerHTML = `<button class="primary-btn" onclick="location.reload()">重新挑戰</button>`;
+      }
+    }
+  </script>
+</body>
+</html>

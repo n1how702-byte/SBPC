@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDGs 性別平權小達人 - 學習證書</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background: #eef2f7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* 頂部控制面板 (列印時自動隱藏) */
+    .controls-panel {
+      background: #ffffff;
+      padding: 20px 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .controls-panel label {
+      font-size: 18px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    .name-input {
+      font-size: 18px;
+      padding: 10px 16px;
+      border: 2px solid #bdc3c7;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .name-input:focus {
+      border-color: #27ae60;
+    }
+    .print-btn {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+      transition: all 0.2s;
+    }
+    .print-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.6);
+    }
+    .restart-btn {
+      background: #95a5a6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .restart-btn:hover {
+      background: #7f8c8d;
+    }
+
+    /* 證書卡片本體 */
+    .certificate-card {
+      width: 800px;
+      height: 560px;
+      background: #ffffff;
+      border: 12px solid #2c3e50;
+      outline: 4px solid #f39c12;
+      outline-offset: -16px;
+      border-radius: 12px;
+      padding: 40px 60px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      background-image: radial-gradient(#f1c40f 0.6px, transparent 0.6px);
+      background-size: 24px 24px;
+    }
+
+    /* 證書四角飾角 */
+    .corner-decor {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f39c12;
+    }
+    .top-left { top: 24px; left: 24px; border-right: none; border-bottom: none; }
+    .top-right { top: 24px; right: 24px; border-left: none; border-bottom: none; }
+    .bottom-left { bottom: 24px; left: 24px; border-right: none; border-top: none; }
+    .bottom-right { bottom: 24px; right: 24px; border-left: none; border-top: none; }
+
+    /* 標頭與內文 */
+    .cert-header {
+      text-align: center;
+    }
+    .cert-sub {
+      font-size: 20px;
+      letter-spacing: 4px;
+      color: #7f8c8d;
+      margin-bottom: 5px;
+    }
+    .cert-main-title {
+      font-size: 42px;
+      font-weight: 900;
+      color: #2c3e50;
+      letter-spacing: 3px;
+    }
+    .cert-body {
+      text-align: center;
+      width: 100%;
+    }
+    .user-name-display {
+      font-size: 38px;
+      font-weight: bold;
+      color: #2980b9;
+      border-bottom: 3px dashed #2980b9;
+      padding: 0 25px 5px 25px;
+      display: inline-block;
+      min-width: 220px;
+      margin: 15px 0;
+    }
+    .cert-text {
+      font-size: 20px;
+      color: #34495e;
+      line-height: 1.8;
+    }
+    .badge-title {
+      display: inline-block;
+      font-size: 28px;
+      font-weight: 900;
+      color: #d35400;
+      background: #fef5e7;
+      border: 2px solid #e67e22;
+      padding: 8px 28px;
+      border-radius: 30px;
+      margin-top: 12px;
+      box-shadow: 0 4px 10px rgba(230, 126, 34, 0.2);
+    }
+
+    /* 底部資訊與印章 */
+    .cert-footer {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 15px;
+    }
+    .date-stamp {
+      font-size: 16px;
+      color: #7f8c8d;
+      font-weight: bold;
+    }
+    .seal-mark {
+      width: 85px;
+      height: 85px;
+      border-radius: 50%;
+      background: #e74c3c;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.35);
+      transform: rotate(-15deg);
+      border: 3px dashed #ffffff;
+    }
+
+    /* 列印時自動隱藏控制面板 */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        justify-content: center;
+      }
+      .controls-panel {
+        display: none !important;
+      }
+      .certificate-card {
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 控制面板 -->
+  <div class="controls-panel">
+    <label for="name-input">請輸入您的姓名：</label>
+    <input type="text" id="name-input" class="name-input" placeholder="例如：王小明" maxlength="15" oninput="updateName()">
+    <button class="print-btn" onclick="printCertificate()">🖨️ 下載 / 列印證書</button>
+    <a href="index.html" class="restart-btn">返回第一關</a>
+  </div>
+
+  <!-- 證書本體 -->
+  <div class="certificate-card">
+    <div class="corner-decor top-left"></div>
+    <div class="corner-decor top-right"></div>
+    <div class="corner-decor bottom-left"></div>
+    <div class="corner-decor bottom-right"></div>
+
+    <div class="cert-header">
+      <div class="cert-sub">SDGs 永續發展目標</div>
+      <div class="cert-main-title">學習榮譽證書</div>
+    </div>
+
+    <div class="cert-body">
+      <p class="cert-text">茲證明</p>
+      <div class="user-name-display" id="name-display">學習者</div>
+      <p class="cert-text">
+        順利完成性別平權關卡挑戰，具備優秀的性別平等觀念與素養，特頒發稱號：
+      </p>
+      <div class="badge-title">🏅 SDGs 性別平權小達人</div>
+    </div>
+
+    <div class="cert-footer">
+      <div class="date-stamp">發證日期：<span id="cert-date"></span></div>
+      <div class="seal-mark">SDGs<br>認證</div>
+    </div>
+  </div>
+
+  <script>
+    function updateName() {
+      const input = document.getElementById('name-input').value.trim();
+      document.getElementById('name-display').innerText = input.length > 0 ? input : '學習者';
+    }
+
+    function printCertificate() {
+      const input = document.getElementById('name-input').value.trim();
+      if (!input) {
+        if (!confirm('您尚未填寫姓名，要直接列印嗎？')) {
+          document.getElementById('name-input').focus();
+          return;
+        }
+      }
+      window.print();
+    }
+
+    window.onload = function() {
+      const today = new Date();
+      const dateStr = `${today.getFullYear()} 年 ${today.getMonth() + 1} 月 ${today.getDate()} 日`;
+      document.getElementById('cert-date').innerText = dateStr;
+    };
+  </script>
+</body>
+</html>
